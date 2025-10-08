@@ -92,6 +92,20 @@ Alternative resolutions you could choose later:
 
 Given the project is a self‑contained demo and functionality is verified, using legacy peer deps is an acceptable temporary trade‑off.
 
+## App Assets
+The `app.json` references these images in `./assets/`:
+- `icon.png`
+- `adaptive-icon.png`
+- `splash.png`
+- `favicon.png`
+
+Placeholder files are included so EAS Build (prebuild phase) can hash and process them. Replace them with real images for branding:
+- App icon / adaptive icon: 1024x1024 (foreground PNG with transparency for adaptive)
+- Splash: Recommended at least your device max resolution (e.g., 1242x2436) with background color matching `splash.backgroundColor`.
+- Favicon: 48x48 or 64x64 PNG.
+
+If any of these files are missing EAS prebuild will fail (as you saw with the missing `adaptive-icon.png` error). Keep the filenames stable unless you also update `app.json`.
+
 ## Submission
 Everything required to run and evaluate is contained locally. No API keys or network needed.
 

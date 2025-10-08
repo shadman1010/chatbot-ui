@@ -19,7 +19,6 @@
     },
     "android": {
       "package": "com.example.chatbotui",
-      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F1115"
