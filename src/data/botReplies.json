@@ -1,0 +1,6 @@
+[
+  {"category": "greeting", "texts": ["Hi there! How can I help you today?", "Hey! What's on your mind?", "Hello! Ask me anything."]},
+  {"category": "fallback", "texts": ["Interesting! Tell me more.", "Got it. What else?", "Let's dig deeper—can you elaborate?", "Hmm... how does that make you feel?"]},
+  {"category": "tech", "texts": ["React Native lets you build native apps using React.", "Expo speeds up development with managed workflow tools.", "TypeScript adds static typing to help catch errors early."]},
+  {"category": "fun", "texts": ["Did you know octopuses have three hearts?", "Fun fact: Honey never spoils.", "Productivity tip: small consistent steps beat bursts."]}
+]
