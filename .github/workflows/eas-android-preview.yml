@@ -31,20 +31,22 @@ jobs:
       - name: Install EAS CLI
         run: npm install -g eas-cli
 
-      - name: Log in to EAS (token)
+      - name: Verify EAS auth (token auto mode)
         env:
-          EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
-        run: eas whoami || eas login --token "$EAS_TOKEN"
+          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
+        run: |
+          # Newer EAS CLI auto-auths via EXPO_TOKEN; explicit login not required.
+          eas whoami || echo "Using EXPO_TOKEN for non-interactive auth"
 
       - name: Run EAS build (preview APK)
         env:
-          EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
+          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: >-
           eas build --platform android --profile preview --non-interactive --no-wait
 
       - name: Poll build status
         env:
-          EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
+          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
           echo "Waiting for build to finish..."
           eas build:list --limit 1 --status in-progress
@@ -65,7 +67,7 @@ jobs:
       - name: Retrieve latest artifact URL
         id: artifact
         env:
-          EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
+          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
           URL=$(eas build:list --limit 1 --json | jq -r '.[0].artifacts.buildUrl')
           echo "Artifact URL: $URL"
