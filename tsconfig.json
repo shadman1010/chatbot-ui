@@ -1,27 +1,26 @@
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "target": "es2017",
+    // Keep target/module explicit for clarity (base uses ESNext)
+    "target": "ES2017",
     "module": "esnext",
-  "jsx": "react-jsx",
+    // Use modern JSX transform; change to "react-native" if issues arise
+    "jsx": "react-jsx",
     "strict": true,
-    "moduleResolution": "node",
+    // Inherit bundler resolution from base (do not force node) to allow customConditions
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
     "baseUrl": "./",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
-    }
+      "@/*": ["src/*"]
+    },
+    "types": ["jest", "node"]
   },
-  "include": [
-    "src",
-    "App.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
-  "extends": "expo/tsconfig.base"
+  "include": ["src", "App.tsx"],
+  "exclude": ["node_modules"]
 }
