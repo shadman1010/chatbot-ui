@@ -52,6 +52,10 @@ jobs:
           which node
           echo '\nList files:'
           ls -1
+          echo '\nToken presence (length only):'
+          if [ -n "$EXPO_TOKEN" ]; then echo "EXPO_TOKEN length: ${#EXPO_TOKEN}"; else echo 'EXPO_TOKEN is EMPTY'; fi
+          echo '\ncli.appVersionSource field:'
+          grep -o 'appVersionSource[^\"]*"[^\"]*"' eas.json || echo 'not found'
 
       - name: Run EAS build (preview APK)
         env:
