@@ -19,6 +19,7 @@
     },
     "android": {
       "package": "com.example.chatbotui",
+      "jsEngine": "jsc",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F1115"
@@ -43,7 +44,8 @@
             "newArchEnabled": false,
             "ndkVersion": "26.1.10909125",
             "gradleProperties": {
-              "android.ndkVersion": "26.1.10909125"
+              "android.ndkVersion": "26.1.10909125",
+              "android.enablePrefab": "true"
             },
             "buildFeatures": {
               "prefab": true
