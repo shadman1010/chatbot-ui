@@ -23,6 +23,9 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
+        # Use legacy peer deps to bypass React 19 / react-native-web@0.19 peer range mismatch
+        env:
+          NPM_CONFIG_LEGACY_PEER_DEPS: 'true'
         run: npm ci
 
       - name: Install EAS CLI

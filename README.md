@@ -17,10 +17,29 @@ A single-screen mobile chatbot interface built with React Native + Expo. It simu
 - Unit test for grouping logic (Jest + ts-jest)
 
 ## Tech
-- Expo SDK 51
-- React Native 0.74
+- Expo SDK 54
+- React Native 0.81
+- React 19
 - TypeScript
 - Jest for unit testing
+
+## CI / EAS Build Setup
+The repo includes a GitHub Actions workflow at `.github/workflows/eas-android-preview.yml` that builds a preview APK on pushes to `main` (excluding trivial file changes) or via manual dispatch.
+
+Steps to enable it:
+1. Create an EAS account (https://expo.dev) and run locally: `eas login` (if not already logged in).
+2. Generate a non-expiring token: `eas token:create --non-interactive` (copy the output token).
+3. In your GitHub repository settings: Settings → Secrets and variables → Actions → New repository secret.
+  - Name: `EAS_TOKEN`
+  - Value: (paste the token)
+4. Push to `main` or trigger the workflow manually (Actions tab → Build Android Preview (APK) → Run workflow).
+5. On success, the job summary will show an APK download URL.
+
+Optional production build:
+- Add a second job using the `production` profile (see `eas.json`) producing an AAB for Play Store. You would run: `eas build --platform android --profile production`.
+
+Credentials:
+- For the first production build, EAS may prompt to generate or upload a keystore. Running a local `eas build --platform android --profile production` once and accepting the prompts will associate credentials with the project so CI builds can proceed.
 
 ## Getting Started
 
@@ -55,12 +74,23 @@ src/
 `generateBotReply` checks for simple keywords (react, native, code, hello, hi, fun, fact) to select a category; otherwise falls back to generic prompts. A random text from that category is returned. Streaming is simulated at ~40 chars/sec.
 
 ## Potential Enhancements (Nice-to-haves)
-- Persist chat history (AsyncStorage)
-- Theming / dark-light toggle
 - Message actions (copy, long-press menu)
 - Rich markdown rendering for bot replies
 - Better natural language variation / small Markov chain
-- Accessibility pass (TalkBack / VoiceOver labels)
+- Accessibility / screen reader improvements
+
+## Peer Dependency Note (React 19 + react-native-web)
+React 19 is currently outside the declared peer range of `react-native-web@0.19.x` (which lists `react@^18`). This causes `npm ci` (which enforces peer deps strictly) to fail with an `ERESOLVE` conflict. Workarounds implemented here:
+
+1. `.npmrc` contains `legacy-peer-deps=true` so local and CI installs ignore the peer mismatch.
+2. The GitHub Actions workflow also sets `NPM_CONFIG_LEGACY_PEER_DEPS=true` for safety.
+
+Alternative resolutions you could choose later:
+- Downgrade to React 18 / Expo SDK combination that still uses React 18.
+- Upgrade `react-native-web` when it releases a version whose peer range includes React 19.
+- Use `--force` (not recommended) which may mask other issues.
+
+Given the project is a self‑contained demo and functionality is verified, using legacy peer deps is an acceptable temporary trade‑off.
 
 ## Submission
 Everything required to run and evaluate is contained locally. No API keys or network needed.
