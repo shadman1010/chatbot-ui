@@ -4,6 +4,8 @@
   "private": true,
   "main": "index.js",
   "scripts": {
+    "generate:assets": "node scripts/generate-assets.js",
+    "prestart": "npm run generate:assets",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",

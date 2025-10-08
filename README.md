@@ -106,6 +106,9 @@ Placeholder files are included so EAS Build (prebuild phase) can hash and proces
 
 If any of these files are missing EAS prebuild will fail (as you saw with the missing `adaptive-icon.png` error). Keep the filenames stable unless you also update `app.json`.
 
+### Generated placeholders
+A minimal 1x1 transparent PNG is written to each required file by the script `npm run generate:assets` (also auto-run via `prestart`). These are purely placeholders; replace them before distributing a production build.
+
 ## Submission
 Everything required to run and evaluate is contained locally. No API keys or network needed.
 
