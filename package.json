@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "main": "index.js",
+  "engines": {
+    "node": ">=20 <21",
+    "npm": ">=10 <11"
+  },
   "scripts": {
     "generate:assets": "node scripts/generate-assets.js",
     "preprebuild": "npm run generate:assets",
