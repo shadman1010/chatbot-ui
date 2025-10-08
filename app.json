@@ -41,7 +41,10 @@
         {
           "android": {
             "newArchEnabled": false,
-            "ndkVersion": "26.1.10909125"
+            "ndkVersion": "26.1.10909125",
+            "gradleProperties": {
+              "android.ndkVersion": "26.1.10909125"
+            }
           }
         }
       ]
