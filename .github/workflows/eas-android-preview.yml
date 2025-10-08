@@ -38,71 +38,38 @@ jobs:
           # Newer EAS CLI auto-auths via EXPO_TOKEN; explicit login not required.
           eas whoami || echo "Using EXPO_TOKEN for non-interactive auth"
 
-      - name: Debug config (projectId + versions)
+      - name: Cancel existing queued preview builds (best-effort)
+        if: ${{ env.EXPO_TOKEN != '' }}
+        env:
+          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
-          echo '--- app.json ---'
-          cat app.json || true
-          echo '\n--- eas.json ---'
-          cat eas.json || true
-          echo '\nExtract projectId:'
-          grep -o 'projectId[^"]*"[^"]*"' app.json || true
-          echo '\nCLI version:'
-          eas --version || true
-          echo '\nWhich node:'
-          which node
-          echo '\nList files:'
-          ls -1
-          echo '\nToken presence (length only):'
-          if [ -n "$EXPO_TOKEN" ]; then echo "EXPO_TOKEN length: ${#EXPO_TOKEN}"; else echo 'EXPO_TOKEN is EMPTY'; fi
-          echo '\ncli.appVersionSource field:'
-          grep -o 'appVersionSource[^\"]*"[^\"]*"' eas.json || echo 'not found'
+          set +e
+          IDS=$(eas build:list --status new --status in-queue --platform android --json | jq -r '.[] | select(.buildProfile=="preview") | .id')
+          for id in $IDS; do
+            echo "Canceling existing build $id";
+            eas build:cancel $id || true;
+          done
+          echo "Done cancel attempts"
 
-      - name: Run EAS build (preview APK)
+      - name: Build (blocking preview APK)
+        id: build
         env:
           EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
           set -e
-          echo "Triggering build..."
-          BUILD_JSON=$(eas build --platform android --profile preview --non-interactive --no-wait --json)
-          echo "$BUILD_JSON" | jq '.'
-          BUILD_ID=$(echo "$BUILD_JSON" | jq -r '.id // .builds[0].id // empty')
-          if [ -z "$BUILD_ID" ]; then
-            echo "Failed to extract build ID" >&2
+          JSON=$(eas build --platform android --profile preview --non-interactive --json)
+          echo "$JSON" | jq '.'
+          BUILD_ID=$(echo "$JSON" | jq -r '.id')
+          STATUS=$(echo "$JSON" | jq -r '.status')
+          echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
+          if [ "$STATUS" != "finished" ]; then
+            echo "Build did not finish successfully (status=$STATUS)" >&2
             exit 1
           fi
-          echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
-          echo "Queued build $BUILD_ID"
-
-      - name: Poll build status
-        env:
-          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
-        run: |
-          echo "Waiting for build to finish..."
-          if [ -z "$BUILD_ID" ]; then echo "No BUILD_ID exported" >&2; exit 1; fi
-          for i in {1..60}; do
-            STATUS=$(eas build:view $BUILD_ID --json | jq -r '.status') || STATUS="unknown"
-            echo "[$i] Status: $STATUS"
-            if [ "$STATUS" = "finished" ]; then
-              break
-            elif [ "$STATUS" = "errored" ] || [ "$STATUS" = "canceled" ]; then
-              echo "Build failed or canceled" >&2
-              eas build:view $BUILD_ID --json | jq -r '.error' || true
-              exit 1
-            fi
-            sleep 30
-          done
-          echo "Final status: $(eas build:view $BUILD_ID --json | jq -r '.status')"
-
-      - name: Retrieve latest artifact URL
-        id: artifact
-        env:
-          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
-        run: |
-          if [ -z "$BUILD_ID" ]; then echo "Missing BUILD_ID for artifact retrieval" >&2; exit 1; fi
-          URL=$(eas build:view $BUILD_ID --json | jq -r '.artifacts.buildUrl')
-          echo "Artifact URL: $URL"
+          URL=$(echo "$JSON" | jq -r '.artifacts.buildUrl')
           echo "apk_url=$URL" >> $GITHUB_OUTPUT
+          echo "Artifact URL: $URL"
 
-      - name: Add artifact URL to summary
+      - name: Summary
         run: |
-          echo "APK Download URL: ${{ steps.artifact.outputs.apk_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "APK Download URL: ${{ steps.build.outputs.apk_url }}" >> $GITHUB_STEP_SUMMARY
