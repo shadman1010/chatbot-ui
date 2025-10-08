@@ -38,6 +38,21 @@ jobs:
           # Newer EAS CLI auto-auths via EXPO_TOKEN; explicit login not required.
           eas whoami || echo "Using EXPO_TOKEN for non-interactive auth"
 
+      - name: Debug config (projectId + versions)
+        run: |
+          echo '--- app.json ---'
+          cat app.json || true
+          echo '\n--- eas.json ---'
+          cat eas.json || true
+          echo '\nExtract projectId:'
+          grep -o 'projectId[^"]*"[^"]*"' app.json || true
+          echo '\nCLI version:'
+          eas --version || true
+          echo '\nWhich node:'
+          which node
+          echo '\nList files:'
+          ls -1
+
       - name: Run EAS build (preview APK)
         env:
           EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}

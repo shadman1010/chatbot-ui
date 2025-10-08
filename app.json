@@ -28,6 +28,12 @@
     "web": {
       "bundler": "metro",
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "684d2107-d3f5-4447-ba16-a36d6b69ea6e"
+      }
+    },
+    "owner": "insanet"
   }
 }
