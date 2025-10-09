@@ -12,6 +12,8 @@ on:
 jobs:
   build-preview-android:
     runs-on: ubuntu-latest
+    env:
+      EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,16 +34,12 @@ jobs:
         run: npm install -g eas-cli
 
       - name: Verify EAS auth (token auto mode)
-        env:
-          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
           # Newer EAS CLI auto-auths via EXPO_TOKEN; explicit login not required.
           eas whoami || echo "Using EXPO_TOKEN for non-interactive auth"
 
       - name: Cancel existing queued preview builds (best-effort)
-        if: ${{ secrets.EAS_TOKEN != '' }}
-        env:
-          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
+        if: ${{ env.EXPO_TOKEN != '' }}
         run: |
           set +e
           IDS=$(eas build:list --status new --status in-queue --platform android --json | jq -r '.[] | select(.buildProfile=="preview") | .id')
@@ -53,8 +51,6 @@ jobs:
 
       - name: Build (blocking preview APK)
         id: build
-        env:
-          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
           set -euo pipefail
           JSON=$(eas build --platform android --profile preview --non-interactive --wait --json)
