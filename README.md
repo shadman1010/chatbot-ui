@@ -1,7 +1,6 @@
 # Chatbot UI (React Native / Expo)
 
-APK LINK  https://expo.dev/artifacts/eas/gEC9sumbH8pxVAaKLEz7iF.apk
-
+APK LINK https://expo.dev/artifacts/eas/6tMdfbGoH6S5m76ZmR53Sr.apk
 A single-screen mobile chatbot interface built with React Native + Expo. It simulates an LLM-like chat experience using only local fake data (no backend, no network calls). Now includes light/dark theme toggle with persisted preference.
 
 ## Brief compliance (Graphland)
