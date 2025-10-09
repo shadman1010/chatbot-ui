@@ -39,7 +39,7 @@ jobs:
           eas whoami || echo "Using EXPO_TOKEN for non-interactive auth"
 
       - name: Cancel existing queued preview builds (best-effort)
-        if: ${{ env.EXPO_TOKEN != '' }}
+        if: ${{ secrets.EAS_TOKEN != '' }}
         env:
           EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
@@ -56,17 +56,28 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
         run: |
-          set -e
-          JSON=$(eas build --platform android --profile preview --non-interactive --json)
+          set -euo pipefail
+          JSON=$(eas build --platform android --profile preview --non-interactive --wait --json)
           echo "$JSON" | jq '.'
-          BUILD_ID=$(echo "$JSON" | jq -r '.id')
-          STATUS=$(echo "$JSON" | jq -r '.status')
+          # EAS may return an array (even for a single build). Normalize to a single object.
+          ROOT=$(echo "$JSON" | jq 'if type=="array" then (.[0] // {}) else . end')
+          # Guard: ensure we have something
+          if [ "$(echo "$ROOT" | jq -r 'type')" != "object" ]; then
+            echo "Unexpected JSON from EAS build --json" >&2
+            exit 1
+          fi
+          BUILD_ID=$(echo "$ROOT" | jq -r '.id // empty')
+          if [ -z "$BUILD_ID" ]; then
+            echo "No build ID found in EAS JSON" >&2
+            exit 1
+          fi
           echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
+          STATUS=$(echo "$ROOT" | jq -r '.status // empty' | tr '[:upper:]' '[:lower:]')
           if [ "$STATUS" != "finished" ]; then
             echo "Build did not finish successfully (status=$STATUS)" >&2
             exit 1
           fi
-          URL=$(echo "$JSON" | jq -r '.artifacts.buildUrl')
+          URL=$(echo "$ROOT" | jq -r '.artifacts.buildUrl // .artifacts.applicationArchiveUrl // empty')
           echo "apk_url=$URL" >> $GITHUB_OUTPUT
           echo "Artifact URL: $URL"
 

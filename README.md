@@ -35,11 +35,6 @@ Steps to enable it:
 4. Push to `main` or trigger the workflow manually (Actions tab → Build Android Preview (APK) → Run workflow).
 5. On success, the job summary will show an APK download URL.
 
-Optional production build:
-- Add a second job using the `production` profile (see `eas.json`) producing an AAB for Play Store. You would run: `eas build --platform android --profile production`.
-
-Credentials:
-- For the first production build, EAS may prompt to generate or upload a keystore. Running a local `eas build --platform android --profile production` once and accepting the prompts will associate credentials with the project so CI builds can proceed.
 
 ## Getting Started
 
@@ -99,7 +94,7 @@ The `app.json` references these images in `./assets/`:
 - `splash.png`
 - `favicon.png`
 
-Placeholder files are included so EAS Build (prebuild phase) can hash and process them. Replace them with real images for branding:
+Placeholder files are included so EAS Build can hash and process them. 
 - App icon / adaptive icon: 1024x1024 (foreground PNG with transparency for adaptive)
 - Splash: Recommended at least your device max resolution (e.g., 1242x2436) with background color matching `splash.backgroundColor`.
 - Favicon: 48x48 or 64x64 PNG.
