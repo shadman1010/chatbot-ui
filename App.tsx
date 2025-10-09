@@ -15,7 +15,11 @@ function ChatScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>      
   <StatusBar style={theme.name === 'dark' ? 'light' : 'dark'} />
       <Header />
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={0}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
+      >
   <MessageList data={grouped} typing={typing} onStop={stopStreaming} onRetry={retryMessage} />
         <InputBar onSend={sendMessage} />
       </KeyboardAvoidingView>

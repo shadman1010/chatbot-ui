@@ -25,6 +25,7 @@ export const InputBar: React.FC<Props> = ({ onSend }) => {
         placeholderTextColor={theme.textDim}
         value={value}
         onChangeText={setValue}
+        textAlignVertical="top"
         style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text }]}
       />
       <Pressable onPress={handleSend} style={[styles.button, { backgroundColor: theme.primary }, !canSend && { opacity: 0.4 }]} disabled={!canSend}>
@@ -36,7 +37,7 @@ export const InputBar: React.FC<Props> = ({ onSend }) => {
 
 const styles = StyleSheet.create({
   container: { flexDirection: 'row', padding: 12, borderTopWidth: StyleSheet.hairlineWidth },
-  input: { flex: 1, fontSize: 16, paddingVertical: 8, paddingHorizontal: 12, borderRadius: 20, maxHeight: 120 },
+  input: { flex: 1, fontSize: 16, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 20, maxHeight: 140 },
   button: { marginLeft: 8, paddingHorizontal: 18, borderRadius: 20, justifyContent: 'center' },
   buttonText: { fontWeight: '600' }
 });

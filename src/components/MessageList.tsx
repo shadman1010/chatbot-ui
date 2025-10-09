@@ -29,7 +29,7 @@ export const MessageList: React.FC<Props> = ({ data, typing, onStop, onRetry }) 
   renderItem={({ item }) => <MessageBubble message={item} onStop={onStop} onRetry={onRetry} />}
       onContentSizeChange={() => ref.current?.scrollToEnd({ animated: true })}
       ListFooterComponent={typing ? <View style={styles.typingWrapper}><TypingIndicator /></View> : null}
-      contentContainerStyle={{ paddingTop: 8, paddingBottom: 12, backgroundColor: theme.background }}
+      contentContainerStyle={{ paddingTop: 8, paddingBottom: 80, backgroundColor: theme.background }}
     />
   );
 };
