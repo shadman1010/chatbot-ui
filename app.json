@@ -19,7 +19,7 @@
     },
     "android": {
       "package": "com.example.chatbotui",
-      "jsEngine": "jsc",
+  "jsEngine": "jsc",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F1115"
