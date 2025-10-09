@@ -10,6 +10,7 @@ export interface ChatMessage {
   content: string;
   createdAt: number; // epoch ms
   streaming?: boolean; // for bot messages being typed
+  failed?: boolean; // when generation fails and can be retried
 }
 
 export interface GroupedMessage extends ChatMessage {
@@ -35,8 +36,9 @@ export function groupMessages(messages: ChatMessage[]): GroupedMessage[] {
       ...m,
       firstInGroup: !samePrev,
       lastInGroup: !sameNext,
+      // Show avatar and timestamp on the last message of a group to reduce clutter
       showAvatar: !sameNext,
-      showTimestamp: !samePrev,
+      showTimestamp: !sameNext,
     });
   }
   return result;
@@ -47,6 +49,8 @@ export interface UseChatResult {
   grouped: GroupedMessage[];
   typing: boolean;
   sendMessage: (text: string) => void;
+  stopStreaming: (id: string) => void;
+  retryMessage: (failedId: string) => void;
 }
 
 export function useChat(): UseChatResult {
@@ -108,6 +112,13 @@ export function useChat(): UseChatResult {
     const delay = 400 + Math.random() * 700; // 0.4 - 1.1s
     setTimeout(() => {
       setTyping(false);
+      // Simulate failure ~10% of the time
+      const failed = Math.random() < 0.1;
+      if (failed) {
+        const botFail: ChatMessage = { id: uuid(), role: 'bot', content: 'Generation failed. Tap Retry.', createdAt: Date.now(), failed: true };
+        setMessages((prev: ChatMessage[]) => [...prev, botFail]);
+        return;
+      }
       const full = generateBotReply({ userMessage: text });
       const bot: ChatMessage = { id: uuid(), role: 'bot', content: '', createdAt: Date.now(), streaming: true };
       streamingRef.current = { id: bot.id, full, index: 0 };
@@ -115,7 +126,37 @@ export function useChat(): UseChatResult {
     }, delay);
   }, []);
 
+  const stopStreaming = useCallback((id: string) => {
+    if (streamingRef.current?.id === id) {
+      streamingRef.current = null;
+      setMessages((prev: ChatMessage[]) => prev.map(m => (m.id === id ? { ...m, streaming: false } : m)));
+    }
+  }, []);
+
+  const retryMessage = useCallback((failedId: string) => {
+    // Find the failed message and the nearest previous user message
+    setTyping(true);
+    const delay = 300 + Math.random() * 400;
+    setTimeout(() => {
+      setTyping(false);
+      setMessages((prev: ChatMessage[]) => {
+        const idx = prev.findIndex(m => m.id === failedId && m.failed);
+        if (idx === -1) return prev;
+        let userText = 'Hello';
+        for (let i = idx - 1; i >= 0; i--) {
+          if (prev[i].role === 'user') { userText = prev[i].content; break; }
+        }
+        const full = generateBotReply({ userMessage: userText });
+        const updated = [...prev];
+        const msg = updated[idx];
+        updated[idx] = { ...msg, content: '', failed: false, streaming: true, createdAt: Date.now() };
+        streamingRef.current = { id: msg.id, full, index: 0 };
+        return updated;
+      });
+    }, delay);
+  }, []);
+
   const grouped = groupMessages(messages);
 
-  return { messages, grouped, typing, sendMessage };
+  return { messages, grouped, typing, sendMessage, stopStreaming, retryMessage };
 }
