@@ -19,7 +19,7 @@
     },
     "android": {
       "package": "com.example.chatbotui",
-  "jsEngine": "jsc",
+  "jsEngine": "hermes",
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
