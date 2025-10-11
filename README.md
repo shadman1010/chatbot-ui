@@ -140,16 +140,9 @@ Placeholder files are included so EAS Build can hash and process them.
 
 If any of these files are missing EAS prebuild will fail (as you saw with the missing `adaptive-icon.png` error). Keep the filenames stable unless you also update `app.json`.
 
-### Generated placeholders
-A minimal 1x1 transparent PNG is written to each required file by the script `npm run generate:assets` (also auto-run via `prestart`). These are purely placeholders; replace them before distributing a production build.
 
-## Submission
-Everything required to run and evaluate is contained locally. No API keys or network needed.
 
-Quick links
-- Android preview APK: https://expo.dev/artifacts/eas/4KcbdyHWj3NpwTtXfNrMRu.apk (links expire ~30 days)
-- Repository: https://github.com/shadman1010/chatbot-ui
-- Recording (≤2 min): add a link here (e.g., Google Drive/Streamable)
+
 
 ---
 Enjoy exploring the chat UI! 🔍
